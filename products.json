@@ -1,21 +1,19 @@
-[
-  {
-    "id": "kamisafe-fan",
-    "name": "KAMISAFE Rechargeable Fan",
-    "category": "Home & Living",
-    "network": "Jumia",
-    "description": "Check current price, availability and product details on Jumia.",
-    "url": "https://jmia.io/LYskPG3",
-    "image": "",
-    "active": true
-  }{
-  "id": "itel-20000mah-powerbank-001",
-  "name": "Itel 20000mAh Power Bank",
-  "category": "Phones & Accessories",
-  "network": "Jumia",
-  "description": "20,000mAh power bank with 12W Type-C charging, three output ports and LED flashlight.",
-  "url": "https://jmia.io/yUsJkjy",
-  "image": "https://ng.jumia.is/unsafe/fit-in/680x680/filters:fill(white)/product/83/7520914/1.jpg?1438",
-  "active": true
+{
+"id": "kamisafe-fan",
+"name": "KAMISAFE Rechargeable Fan",
+"category": "Home & Living",
+"network": "Jumia",
+"description": "Check current price, availability and product details on Jumia.",
+"url": "https://jmia.io/LYskPG3",
+"image": "",
+"active": true
+}{
+"id": "itel-20000mah-powerbank-001",
+"name": "Itel 20000mAh Power Bank",
+"category": "Phones & Accessories",
+"network": "Jumia",
+"description": "20,000mAh power bank with 12W Type-C charging, three output ports and LED flashlight.",
+"url": "https://jmia.io/yUsJkjy",
+"image": "https://ng.jumia.is/unsafe/fit-in/680x680/filters:fill(white)/product/83/7520914/1.jpg?1438",
+"active": true
 }
-]
