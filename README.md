@@ -10,15 +10,6 @@
 Add another object to `products.json`:
 ```json
 {
-  "id": "unique-id",
-  "name": "Product title",
-  "category": "Electronics",
-  "network": "Temu",
-  "description": "Short factual description",
-  "url": "PASTE YOUR EXACT APPROVED AFFILIATE URL",
-  "image": "",
-  "active": true
-}{
   "id": "itel-20000mah-powerbank-001",
   "name": "Itel 20000mAh Power Bank",
   "category": "Phones & Accessories",
