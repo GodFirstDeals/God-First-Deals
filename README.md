@@ -9,7 +9,7 @@
 ## Add products
 Add another object to `products.json`:
 ```json
-{
+{{
   "id": "itel-20000mah-powerbank-001",
   "name": "Itel 20000mAh Power Bank",
   "category": "Phones & Accessories",
@@ -18,6 +18,7 @@ Add another object to `products.json`:
   "url": "https://jmia.io/yUsJkjy",
   "image": "https://ng.jumia.is/unsafe/fit-in/680x680/filters:fill(white)/product/83/7520914/1.jpg?1438",
   "active": true
+}
 }
 ```
 } exact affiliate URL supplied by the programme and images you are allowed to use. Set `active` to `false` to hide an item without deleting it. Do not publish stale prices.
