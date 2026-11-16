@@ -1,0 +1,8 @@
+---
+import { slugify, type Product } from '../data/products';
+const { product } = Astro.props as { product: Product };
+---
+<article class="product-card" data-product-card data-category={product.category} data-trending={String(product.trending)}>
+  <a class="card-image-link" href={`/products/${product.id}/`} aria-label={`View ${product.name}`}><div class="card-image"><img src={product.images[0]} alt={product.name} loading="lazy" decoding="async" /><span class="network-badge">{product.network}</span>{product.trending && <span class="trending-badge">TRENDING</span>}<span class="card-arrow">↗</span></div></a>
+  <div class="card-content"><a class="card-category" href={`/categories/${slugify(product.category)}/`}>{product.category}</a><h3><a href={`/products/${product.id}/`}>{product.name}</a></h3><p>{product.description}</p><div class="card-bottom"><a class="card-detail-link" href={`/products/${product.id}/`}>Explore find <span>→</span></a><a class="retailer-link" href={product.affiliateUrl} target="_blank" rel="sponsored nofollow noopener noreferrer" aria-label={`View ${product.name} at ${product.network}`}>Shop at {product.network} ↗</a></div></div>
+</article>

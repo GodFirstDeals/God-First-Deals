@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { activeProducts } from '../data/products';
+const featured = activeProducts.filter((p) => p.featured);
+---
+<BaseLayout title="About God First Deals" description="Learn about God First Deals, a place for discovering useful marketplace finds.">
+  <main id="main" class="shell text-page"><span class="eyebrow">OUR STORY</span><h1>Good finds, thoughtfully gathered.</h1><p class="page-intro">God First Deals is a discovery platform for useful products and interesting finds from marketplaces including Jumia and Temu.</p><div class="prose"><h2>A simpler way to explore</h2><p>We bring selected products together so you can browse by category, learn what a product is advertised to offer, and continue to the retailer when you’re ready. Our goal is to make discovery clear and straightforward—not to replace the retailer’s product information.</p><h2>Independent recommendations</h2><p>Product descriptions on this site reflect the information supplied for each listing. Product availability and details can change, so please review the retailer’s listing before purchasing. We do not guarantee product performance.</p><h2>How this site is supported</h2><p>Some links are affiliate links. We may earn a commission if you purchase through them, at no extra cost to you. This does not change the price or terms offered by the retailer.</p><p><a href="/affiliate-disclosure/">Read our affiliate disclosure</a> or <a href="/contact/">get in touch</a>.</p></div><section class="related-section"><div class="section-heading"><div><span class="eyebrow">START EXPLORING</span><h2>Some current finds</h2></div></div><div class="product-grid">{featured.slice(0, 3).map((product) => <ProductCard product={product} />)}</div></section></main>
+</BaseLayout>

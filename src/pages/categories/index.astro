@@ -1,0 +1,8 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { categories, slugify, activeProducts } from '../../data/products';
+const icons = ['⚡','⌁','♫','✧','⌂','◒','☼','➤','✿','⌖','◇'];
+---
+<BaseLayout title="Browse Categories | God First Deals" description="Explore curated marketplace finds by category, from power and charging to home and living.">
+  <main id="main" class="shell listing-page"><span class="eyebrow">FIND YOUR KIND OF FIND</span><h1>Browse categories</h1><p class="page-intro">Start with what you need—or follow your curiosity.</p><div class="all-category-grid">{categories.map((category, i) => { const count = activeProducts.filter(p => p.category === category).length; return <a class="all-category-card" href={`/categories/${slugify(category)}/"><span class="category-icon">{icons[i]}</span><span class="all-category-name">{category}</span><span class="category-count">{count ? `${count} ${count === 1 ? 'find' : 'finds'}` : 'Explore soon'}</span><span class="chip-arrow">↗</span></a>; })}</div></main>
+</BaseLayout>

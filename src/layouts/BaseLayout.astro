@@ -1,0 +1,58 @@
+---
+import '../styles/global.css';
+const { title = 'God First Deals | Curated marketplace finds', description = 'Discover thoughtfully curated deals from Jumia and other marketplaces. Browse finds, then shop directly with the retailer.', image = '/og-image.svg' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://godfirstdeals.com');
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#102b25" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="God First Deals" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, Astro.site ?? 'https://godfirstdeals.com')} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="announcement">Good finds, thoughtfully gathered <span aria-hidden="true">✦</span></div>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="/" aria-label="God First Deals home"><span class="brand-mark">G<span>✦</span></span><span class="brand-name">God First <b>Deals</b></span></a>
+        <button class="menu-toggle" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="/">Home</a><a href="/categories/">Categories</a><a href="/about/">About</a><a href="/contact/">Contact</a>
+        </nav>
+        <a class="header-cta" href="/#discover">Explore deals <span aria-hidden="true">↗</span></a>
+      </div>
+    </header>
+    <slot />
+    <footer class="site-footer">
+      <div class="footer-main">
+        <div class="footer-brand"><a class="brand brand-light" href="/"><span class="brand-mark">G<span>✦</span></span><span class="brand-name">God First <b>Deals</b></span></a><p>Thoughtful finds from marketplaces, gathered in one place.</p></div>
+        <div><h2>Explore</h2><a href="/categories/">All categories</a><a href="/?type=trending#discover">Trending deals</a><a href="/about/">Our story</a></div>
+        <div><h2>Help & information</h2><a href="/contact/">Contact us</a><a href="/affiliate-disclosure/">Affiliate disclosure</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a></div>
+      </div>
+      <div class="footer-bottom"><span>© {new Date().getFullYear()} God First Deals</span><span>Independent product discovery. Shop with confidence.</span></div>
+    </footer>
+    <script>
+      const toggle = document.querySelector('.menu-toggle');
+      const nav = document.querySelector('.main-nav');
+      toggle?.addEventListener('click', () => {
+        const open = toggle.getAttribute('aria-expanded') !== 'true';
+        toggle.setAttribute('aria-expanded', String(open));
+        nav?.classList.toggle('is-open', open);
+      });
+    </script>
+  </body>
+</html>

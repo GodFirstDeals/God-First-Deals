@@ -1,0 +1,7 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const { title, description } = Astro.props;
+---
+<BaseLayout title={`${title} | God First Deals`} description={description}>
+  <main id="main" class="shell text-page"><span class="eyebrow">GOD FIRST DEALS</span><h1>{title}</h1><p class="page-intro">{description}</p><slot /></main>
+</BaseLayout>
