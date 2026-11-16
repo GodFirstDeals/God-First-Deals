@@ -1,4 +1,3 @@
-
 {
   "name": "god-first-deals",
   "version": "1.0.0",
@@ -17,6 +16,4 @@
     "astro": "^5.1.1",
     "typescript": "^5.7.2"
   }
-  "test": "node --test"
 }
-{
