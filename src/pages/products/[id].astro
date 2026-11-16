@@ -1,3 +1,4 @@
+
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { activeProducts, slugify } from '../../data/products';
@@ -11,7 +12,9 @@ export function getStaticPaths() {
 }
 
 const { product } = Astro.props;
-const related = activeProducts.filter((item) => item.category === product.category && item.id !== product.id);
+const related = activeProducts.filter(
+  (item) => item.category === product.category && item.id !== product.id
+);
 ---
 <BaseLayout title={`${product.name} | God First Deals`} description={product.description} image={product.images[0]}>
   <main id="main" class="shell detail-page">
@@ -30,12 +33,52 @@ const related = activeProducts.filter((item) => item.category === product.catego
           <div class="thumbnail-row">
             {product.images.map((image, index) => (
               <button class:list={['thumbnail', { selected: index === 0 }]} data-image={image} aria-label={`View product image ${index + 1}`}>
+
+<BaseLayout
+  title={`${product.name} | God First Deals`}
+  description={product.description}
+  image={product.images[0]}
+>
+  <main id="main" class="shell detail-page">
+    <div class="breadcrumbs">
+      <a href="/">Home</a>
+      <span> / </span>
+      <a href="/categories/">Categories</a>
+      <span> / </span>
+      <a href={`/categories/${slugify(product.category)}/`}>
+        {product.category}
+      </a>
+      <span> / {product.name}</span>
+    </div>
+
+    <div class="detail-layout">
+      <div class="gallery">
+        <div class="main-image">
+          <img
+            id="main-product-image"
+            src={product.images[0]}
+            alt={product.name}
+            fetchpriority="high"
+          />
+          <span class="network-badge">{product.network}</span>
+        </div>
+
+        {product.images.length > 1 && (
+          <div class="thumbnail-row">
+            {product.images.map((image, index) => (
+              <button
+                type="button"
+                class:list={['thumbnail', { selected: index === 0 }]}
+                data-image={image}
+                aria-label={`View product image ${index + 1}`}
+              >
                 <img src={image} alt="" loading="lazy" />
               </button>
             ))}
           </div>
         )}
       </div>
+
       <div class="detail-copy">
         <span class="eyebrow">CURATED MARKETPLACE FIND</span>
         <h1>{product.name}</h1>
@@ -61,12 +104,77 @@ const related = activeProducts.filter((item) => item.category === product.catego
       </section>
     )}
   </main>
+
+        <div class="retailer-line">
+          <span class="retailer-dot"></span>
+          Found on <b>{product.network}</b>
+        </div>
+
+        {product.features.length > 0 && (
+          <div class="feature-list">
+            <h2>What it’s advertised to offer</h2>
+            <ul>
+              {product.features.map((feature) => (
+                <li><span>✓</span>{feature}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <a
+          class="button button-dark buy-button"
+          href={product.affiliateUrl}
+          target="_blank"
+          rel="sponsored nofollow noopener noreferrer"
+        >
+          View at {product.network} <span>↗</span>
+        </a>
+
+        <p class="affiliate-hint">
+          You’ll continue to the retailer’s site. We may earn a commission
+          from qualifying purchases.
+        </p>
+
+        <p class="product-caveat">
+          Product details are provided for discovery. Please check the
+          retailer’s current listing for availability and complete information.
+        </p>
+      </div>
+    </div>
+
+    {related.length > 0 && (
+      <section class="related-section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">MORE TO EXPLORE</span>
+            <h2>Similar finds</h2>
+          </div>
+        </div>
+        <div class="product-grid">
+          {related.map((item) => <ProductCard product={item} />)}
+        </div>
+      </section>
+    )}
+  </main>
+
   <script>
-    const mainImage = document.querySelector('#main-product-image');
-    const thumbs = [...document.querySelectorAll('[data-image]')];
-    thumbs.forEach((thumb) => thumb.addEventListener('click', () => {
-      if (mainImage) mainImage.src = thumb.getAttribute('data-image') || '';
-      thumbs.forEach((item) => item.classList.toggle('selected', item === thumb));
-    }));
+    const mainImage = document.querySelector<HTMLImageElement>(
+      '#main-product-image'
+    );
+    const thumbs = [
+      ...document.querySelectorAll<HTMLButtonElement>('[data-image]')
+    ];
+
+    thumbs.forEach((thumb) => {
+      thumb.addEventListener('click', () => {
+        if (mainImage) {
+          mainImage.src = thumb.getAttribute('data-image') || '';
+        }
+
+        thumbs.forEach((item) => {
+          item.classList.toggle('selected', item === thumb);
+        });
+      });
+    });
   </script>
 </BaseLayout>
