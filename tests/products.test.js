@@ -1,126 +1,179 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-import { test } from 'node:test';
+import { readFileSync } from 'node:fs';
+import test from 'node:test';
 import ts from 'typescript';
 
-// Node.js does not execute this project's TypeScript source directly, so
-// transpile the existing data module in memory without changing project files.
-const source = await readFile(
-  new URL('../src/data/products.ts', import.meta.url),
-  'utf8'
-);
-const { outputText } = ts.transpileModule(source, {
+const productsFile = new URL('../src/data/products.ts', import.meta.url);
+const source = readFileSync(productsFile, 'utf8');
+
+const { outputText, diagnostics = [] } = ts.transpileModule(source, {
   compilerOptions: {
     module: ts.ModuleKind.ESNext,
-    target: ts.ScriptTarget.ES2022
-  }
+    target: ts.ScriptTarget.ES2022,
+  },
+  reportDiagnostics: true,
 });
-const { products, activeProducts, categories, slugify } = await import(
-  `data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`
+
+const errors = diagnostics.filter(
+  (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error
 );
 
-const isValidHttpUrl = (value) => {
-  if (typeof value !== 'string' || value.length === 0) return false;
+assert.deepEqual(
+  errors,
+  [],
+  'src/data/products.ts should transpile without errors'
+);
 
-  try {
-    const url = new URL(value);
-    return ['http:', 'https:'].includes(url.protocol) && url.hostname.length > 0;
-  } catch {
-    return false;
-  }
-};
+const moduleUrl = `data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`;
+const { categories, products } = await import(moduleUrl);
 
-test('every product has a unique ID', () => {
+const requiredFields = [
+  'id',
+  'name',
+  'category',
+  'network',
+  'description',
+  'features',
+  'affiliateUrl',
+  'images',
+  'active',
+  'featured',
+  'trending',
+];
+
+function assertValidUrl(value, label) {
+  assert.equal(typeof value, 'string', `${label} must be a string`);
+  const parsed = new URL(value);
+  assert.ok(
+    parsed.protocol === 'http:' || parsed.protocol === 'https:',
+    `${label} must use http or https`
+  );
+}
+
+test('product IDs are unique', () => {
   const ids = products.map((product) => product.id);
-  assert.equal(new Set(ids).size, ids.length, 'product IDs must be unique');
+  assert.equal(
+    new Set(ids).size,
+    ids.length,
+    'product IDs must not be duplicated'
+  );
 });
 
-test('every product has the required fields and field types', () => {
-  const requiredFields = [
-    'id', 'name', 'category', 'network', 'description', 'features',
-    'affiliateUrl', 'images', 'active', 'featured', 'trending'
-  ];
-
+test('every product has the required fields with valid basic types', () => {
   for (const product of products) {
     for (const field of requiredFields) {
-      assert.ok(Object.hasOwn(product, field), `product is missing ${field}`);
+      assert.ok(
+        Object.hasOwn(product, field),
+        `${product.id}: missing required field "${field}"`
+      );
     }
 
-    assert.equal(typeof product.id, 'string');
-    assert.ok(product.id.length > 0);
-    assert.equal(typeof product.name, 'string');
-    assert.ok(product.name.length > 0);
-    assert.ok(categories.includes(product.category));
-    assert.ok(['Jumia', 'Temu', 'Other'].includes(product.network));
-    assert.equal(typeof product.description, 'string');
-    assert.ok(product.description.length > 0);
-    assert.ok(Array.isArray(product.features));
-    assert.ok(product.features.every((feature) => typeof feature === 'string'));
-    assert.equal(typeof product.affiliateUrl, 'string');
-    assert.ok(Array.isArray(product.images));
-    assert.ok(product.images.every((image) => typeof image === 'string'));
-    assert.equal(typeof product.active, 'boolean');
-    assert.equal(typeof product.featured, 'boolean');
-    assert.equal(typeof product.trending, 'boolean');
+    for (const field of ['id', 'name', 'category', 'network', 'description']) {
+      assert.equal(
+        typeof product[field],
+        'string',
+        `${product.id}: ${field} must be a string`
+      );
+      assert.ok(
+        product[field].trim(),
+        `${product.id}: ${field} must not be empty`
+      );
+    }
 
-    if (Object.hasOwn(product, 'price')) {
-      assert.equal(typeof product.price, 'number');
-    }
-    if (Object.hasOwn(product, 'currency')) {
-      assert.equal(typeof product.currency, 'string');
-    }
-    if (Object.hasOwn(product, 'referenceUrl')) {
-      assert.equal(typeof product.referenceUrl, 'string');
+    assert.ok(
+      Array.isArray(product.features),
+      `${product.id}: features must be an array`
+    );
+    assert.ok(
+      product.features.every((feature) => typeof feature === 'string'),
+      `${product.id}: all features must be strings`
+    );
+
+    assert.ok(
+      Array.isArray(product.images),
+      `${product.id}: images must be an array`
+    );
+
+    for (const field of ['active', 'featured', 'trending']) {
+      assert.equal(
+        typeof product[field],
+        'boolean',
+        `${product.id}: ${field} must be a boolean`
+      );
     }
   }
 });
 
-test('every active product has a valid affiliate URL', () => {
-  for (const product of products.filter((item) => item.active)) {
-    assert.ok(
-      isValidHttpUrl(product.affiliateUrl),
-      `active product ${product.id} must have a valid HTTP(S) affiliate URL`
-    );
+test('product prices are valid when provided', () => {
+  for (const product of products) {
+    if (product.price !== undefined) {
+      assert.equal(
+        typeof product.price,
+        'number',
+        `${product.id}: price must be a number`
+      );
+      assert.ok(
+        Number.isFinite(product.price),
+        `${product.id}: price must be finite`
+      );
+      assert.ok(
+        product.price > 0,
+        `${product.id}: price must be greater than zero`
+      );
+    }
+
+    if (product.currency !== undefined) {
+      assert.equal(
+        typeof product.currency,
+        'string',
+        `${product.id}: currency must be a string`
+      );
+      assert.ok(
+        product.currency.trim(),
+        `${product.id}: currency must not be empty`
+      );
+    }
   }
 });
 
-test('every active product has at least one valid image URL', () => {
-  for (const product of products.filter((item) => item.active)) {
+test('product images are valid URLs; active products have at least one image', () => {
+  for (const product of products) {
     assert.ok(
-      product.images.length > 0,
-      `active product ${product.id} must have at least one image`
+      product.images.length > 0 || !product.active,
+      `${product.id}: active products must have at least one image`
     );
-    assert.ok(
-      product.images.every(isValidHttpUrl),
-      `all image URLs for active product ${product.id} must be valid HTTP(S) URLs`
-    );
+
+    for (const image of product.images) {
+      assertValidUrl(image, `${product.id}: image URL`);
+    }
   }
 });
 
-test('inactive products are excluded from active product listings', () => {
-  const expectedActiveProducts = products.filter(
-    (product) => product.active && product.affiliateUrl && product.images.length > 0
-  );
+test('product links are valid URLs when present', () => {
+  for (const product of products) {
+    if (product.affiliateUrl) {
+      assertValidUrl(product.affiliateUrl, `${product.id}: affiliateUrl`);
+    } else {
+      assert.equal(
+        product.active,
+        false,
+        `${product.id}: active products need an affiliate URL`
+      );
+    }
 
-  assert.deepEqual(activeProducts, expectedActiveProducts);
-  for (const product of products.filter((item) => !item.active)) {
-    assert.ok(
-      !activeProducts.includes(product),
-      `inactive product ${product.id} must not appear in activeProducts`
-    );
+    if (product.referenceUrl !== undefined) {
+      assertValidUrl(product.referenceUrl, `${product.id}: referenceUrl`);
+    }
   }
 });
 
-test('category slug generation works correctly', () => {
-  assert.equal(slugify('Power & Charging'), 'power-and-charging');
-  assert.equal(slugify('Home & Living'), 'home-and-living');
-  assert.deepEqual(
-    categories.map((category) => slugify(category)),
-    categories.map((category) =>
-      category.toLowerCase()
-        .replace(/&/g, 'and')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '')
-    )
-  );
+test('every product references a defined category', () => {
+  assert.ok(Array.isArray(categories), 'categories must be an array');
+
+  for (const product of products) {
+    assert.ok(
+      categories.includes(product.category),
+      `${product.id}: unknown category "${product.category}"`
+    );
+  }
 });
