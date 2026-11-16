@@ -1,3 +1,4 @@
+
 {
   "name": "god-first-deals",
   "version": "1.0.0",
@@ -7,7 +8,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "test": "node --test"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -16,4 +18,3 @@
     "typescript": "^5.7.2"
   }
 }
-"test": "node --test"
