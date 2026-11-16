@@ -25,7 +25,7 @@ assert.deepEqual(
 );
 
 const moduleUrl = `data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`;
-const { categories, products } = await import(moduleUrl);
+const { activeProducts, categories, products, slugify } = await import(moduleUrl);
 
 const requiredFields = [
   'id',
@@ -40,6 +40,8 @@ const requiredFields = [
   'featured',
   'trending',
 ];
+
+const allowedNetworks = ['Jumia', 'Temu', 'Other'];
 
 function assertValidUrl(value, label) {
   assert.equal(typeof value, 'string', `${label} must be a string`);
@@ -176,4 +178,79 @@ test('every product references a defined category', () => {
       `${product.id}: unknown category "${product.category}"`
     );
   }
+});
+
+test('categories are non-empty, unique, and have unique URL slugs', () => {
+  assert.ok(categories.length > 0, 'the catalog must define at least one category');
+
+  for (const category of categories) {
+    assert.equal(typeof category, 'string', 'categories must be strings');
+    assert.ok(category.trim(), 'categories must not be empty');
+    assert.ok(slugify(category), `${category}: category slug must not be empty`);
+  }
+
+  assert.equal(
+    new Set(categories).size,
+    categories.length,
+    'categories must not be duplicated'
+  );
+  assert.equal(
+    new Set(categories.map(slugify)).size,
+    categories.length,
+    'category URL slugs must not collide'
+  );
+});
+
+test('product IDs are safe, non-empty URL path segments', () => {
+  for (const product of products) {
+    assert.match(
+      product.id,
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      `${product.id}: ID must be lowercase kebab-case`
+    );
+  }
+});
+
+test('products use supported marketplace networks', () => {
+  for (const product of products) {
+    assert.ok(
+      allowedNetworks.includes(product.network),
+      `${product.id}: unsupported network "${product.network}"`
+    );
+  }
+});
+
+test('features are non-empty strings', () => {
+  for (const product of products) {
+    for (const [index, feature] of product.features.entries()) {
+      assert.ok(
+        feature.trim(),
+        `${product.id}: feature ${index + 1} must not be empty`
+      );
+    }
+  }
+});
+
+test('active products are complete and not included in promotional sections when inactive', () => {
+  for (const product of products) {
+    if (product.active) {
+      assert.ok(product.affiliateUrl, `${product.id}: active products need an affiliate URL`);
+      assert.ok(product.images.length > 0, `${product.id}: active products need images`);
+    } else {
+      assert.equal(product.featured, false, `${product.id}: inactive products cannot be featured`);
+      assert.equal(product.trending, false, `${product.id}: inactive products cannot be trending`);
+    }
+  }
+});
+
+test('activeProducts contains exactly the complete active catalog entries', () => {
+  const expected = products.filter(
+    (product) => product.active && product.affiliateUrl && product.images.length > 0
+  );
+
+  assert.deepEqual(activeProducts, expected);
+  assert.ok(
+    activeProducts.every((product) => products.includes(product)),
+    'activeProducts must only contain catalog entries'
+  );
 });
