@@ -5,7 +5,9 @@
     "baseUrl": ".",
     "paths": { "@/*": ["src/*"] },
     "strictNullChecks": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
   },
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist"]

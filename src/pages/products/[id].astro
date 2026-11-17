@@ -1,4 +1,3 @@
-
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { activeProducts, slugify } from '../../data/products';
@@ -129,8 +128,9 @@ const related = activeProducts.filter(
 
     thumbs.forEach((thumb) => {
       thumb.addEventListener('click', () => {
-        if (mainImage) {
-          mainImage.src = thumb.getAttribute('data-image') || '';
+        const image = thumb.dataset.image;
+        if (mainImage && image) {
+          mainImage.src = image;
         }
 
         thumbs.forEach((item) => {
