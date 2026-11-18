@@ -19,12 +19,13 @@ const categoryIcons = ['⚡','⌁','♫','✧','⌂','◒','☼','➤','✿','�
     <section class="disclosure-note shell"><span class="disclosure-icon">ⓘ</span><p><b>A note about affiliate links</b><br />Some links on this site are affiliate links. If you buy through them, we may earn a commission at no extra cost to you. <a href="/affiliate-disclosure/">Learn more</a>.</p></section>
   </main>
   <script>
-    const cards = [...document.querySelectorAll('[data-product-card]')];
-    const buttons = [...document.querySelectorAll('[data-filter]')];
-    const search = document.querySelector('#product-search');
-    const empty = document.querySelector('.empty-state');
+    const cards = [...document.querySelectorAll<HTMLElement>( '[data-product-card]' )];
+    const buttons = [...document.querySelectorAll<HTMLButtonElement>( '[data-filter]' )];
+    const search = document.querySelector<HTMLInputElement>( '#product-search' );
+    const empty = document.querySelector<HTMLElement>( '.empty-state' );
     const params = new URLSearchParams(location.search);
-    if (search && params.get('q')) search.value = params.get('q');
+    const initialQuery = params.get('q');
+    if (search && initialQuery) search.value = initialQuery;
     let selected = 'all';
     const apply = () => {
       const query = search?.value.trim().toLowerCase() || '';

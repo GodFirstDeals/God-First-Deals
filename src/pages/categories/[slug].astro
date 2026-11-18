@@ -1,7 +1,7 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import ProductCard from '../../src/components/ProductCard.astro';
-import { activeProducts, categories, slugify } from '../../src/data/products';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { activeProducts, categories, slugify } from '../../data/products';
 export function getStaticPaths() { return categories.map((category) => ({ params: { slug: slugify(category) }, props: { category } })); }
 const { category } = Astro.props;
 const items = activeProducts.filter((product) => product.category === category);
