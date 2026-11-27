@@ -1,7 +1,11 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { activeProducts, slugify } from '../../data/products';
+import { activeProducts, slugify, type Product } from '../../data/products';
 import ProductCard from '../../components/ProductCard.astro';
+
+interface Props {
+  product: Product;
+}
 
 export function getStaticPaths() {
   return activeProducts.map((product) => ({
@@ -10,7 +14,7 @@ export function getStaticPaths() {
   }));
 }
 
-const { product } = Astro.props;
+const { product } = Astro.props as Props;
 const related = activeProducts.filter(
   (item) => item.category === product.category && item.id !== product.id
 );

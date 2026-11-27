@@ -1,6 +1,11 @@
 ---
 import '../styles/global.css';
-const { title = 'God First Deals | Curated marketplace finds', description = 'Discover thoughtfully curated deals from Jumia and other marketplaces. Browse finds, then shop directly with the retailer.', image = '/og-image.svg' } = Astro.props;
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+const { title = 'God First Deals | Curated marketplace finds', description = 'Discover thoughtfully curated deals from Jumia and other marketplaces. Browse finds, then shop directly with the retailer.', image = '/og-image.svg' } = Astro.props as Props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://godfirstdeals.com');
 ---
 <!doctype html>
@@ -46,8 +51,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://godfirstdea
       <div class="footer-bottom"><span>© {new Date().getFullYear()} God First Deals</span><span>Independent product discovery. Shop with confidence.</span></div>
     </footer>
     <script>
-      const toggle = document.querySelector('.menu-toggle');
-      const nav = document.querySelector('.main-nav');
+      const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+      const nav = document.querySelector<HTMLElement>('.main-nav');
       toggle?.addEventListener('click', () => {
         const open = toggle.getAttribute('aria-expanded') !== 'true';
         toggle.setAttribute('aria-expanded', String(open));
